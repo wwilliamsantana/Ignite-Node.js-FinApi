@@ -120,6 +120,20 @@ app.get("/statement/data",verifyIfExistsAccountCPF, (request, response) => {
   return response.json(statement) //Retornar o statement, caso possua.
 })
 
+app.put("/account", verifyIfExistsAccountCPF, (request, response) => {
 
+  const {name} = request.body //Ele vai pegar o novo nome no JSON(insomnia)
+  const {customer} = request
+
+  customer.name = name
+
+  return response.status(201).send()
+
+})
+
+app.get("/account", verifyIfExistsAccountCPF, (request, response) => {
+  const {customer} = request
+  return response.json(customer)
+})
 
 app.listen(3333)
