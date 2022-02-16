@@ -22,7 +22,21 @@ function verifyIfExistsAccountCPF(request, response, next){
   return next() // caso a const customer tenha um elemento é não entre no if, ele dará continuidade.
 }
 
+function getBalance(statement){ //Função para verificar saldo, recebendo o statement
 
+  //Operação reduce - Ela pega a informaçoes de determinado valores que passamos para ela é ela vai transforma todos os valores em um valor somente
+  const balance = statement.reduce((acc, operation) => {
+     // acc = Acumulador, vai acumular o valor que estamos recebendo. 
+    //operation = "credit" ou "debit" ele vai mudar a função de acordo a operation
+    if(operation.type === "credit"){//Caso seja credito
+      return acc + operation.amount //vai somar o operation.amount mais acc
+    }else{
+      return acc - operation.amount //Caso seja debito (saque) ele vai subtrair
+    }
+  }, 0)//Este parâmetro é que vamos iniciar o reduce, que será 0 
+
+  return balance //Vai retornar um valor de credito menos debito
+}
 
 app.post('/account', (request, response) => {  //Cadastro de conta
   const { cpf, name } = request.body
@@ -68,6 +82,42 @@ app.post("/deposit", verifyIfExistsAccountCPF, (request, response) => { //Realiz
   
   return response.status(201).send() //Retornar status 201, caso finalize.
 
+})
+
+app.post("/withdraw", verifyIfExistsAccountCPF, (request, response) =>{ // Realizar saque 
+
+  const { amount } = request.body // Pegar o valor desejado do saque no JSON (insomnia)
+  const {customer} = request //Recuperar o customer do nosso Middleware já verificado
+
+  const balance = getBalance(customer.statement) // Enviado o customer.statement para nossa função verificar o valor que possui.
+
+  if(balance < amount){ // Se caso o valor do balance seja menor que o valor que desejamos sacar, ele vai retornar um erro de valor insulficiente!
+    return response.status(400).json({error: "Insufficient Funds!"}) 
+  }
+
+  const statementOperation = { //Criar novo array de dados com os dados do debit(saque) 
+    amount, 
+    created_at: new Date(),
+    type: "debit"
+  }
+
+  customer.statement.push(statementOperation) //Vai enviar para nossa array os dados do saque
+
+  return response.status(201).send() //Retornar status de 201. ok
+
+})
+
+app.get("/statement/data",verifyIfExistsAccountCPF, (request, response) => { 
+  
+  const {date} = request.query // Vai pegar a data dentro do query params(url)
+  const {customer} = request // Chamada da const customer da função verifyIfExistsAccountCPF.
+
+  const dateFormat = new Date(date + " 00:00") //Ele vai formatar a data, para obter qualquer hórario do dia.
+
+  const statement = customer.statement.filter((statement) => statement.created_at.toDateString() === new Date(dateFormat).toDateString())
+  //Ele vai percorrer nossa array customer.statement, adicionado um filter para pegar o created.at (data) e tranformar em Data String ** é fazer a comparação com a data formatada que pegamos do query params(URL)
+
+  return response.json(statement) //Retornar o statement, caso possua.
 })
 
 
