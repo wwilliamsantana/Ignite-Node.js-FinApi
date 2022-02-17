@@ -12,7 +12,7 @@ function verifyIfExistsAccountCPF(request, response, next){
   //Buscando o statement por cpf, caso exista ele dar continuidade, se não existir (for vazio) ele entra no if acusando erro.
 
   const {cpf} = request.headers // Pega o CPF que foi adicionado no Header(insomnia)
-  const customer = customers.find((customer) => customer.cpf === cpf) //faz a busca dentro da array customers, verificando se existe algum eleemnto dentro de customer.cpf igual ao cpf passado pelo header
+  const customer = customers.find((customer) => customer.cpf === cpf) //faz a busca dentro da array customers, verificando se existe algum elemento dentro de customer.cpf igual ao cpf passado pelo header
 
   if(!customer){  //Retorna o erro caso o customer seja vazio
     return response.status(400).json({error: "Customer not found"}) 
@@ -120,37 +120,37 @@ app.get("/statement/data",verifyIfExistsAccountCPF, (request, response) => {
   return response.json(statement) //Retornar o statement, caso possua.
 })
 
-app.put("/account", verifyIfExistsAccountCPF, (request, response) => {
+app.put("/account", verifyIfExistsAccountCPF, (request, response) => { //Alterar o Nome do cliente no customer(array)
 
   const {name} = request.body //Ele vai pegar o novo nome no JSON(insomnia)
-  const {customer} = request
+  const {customer} = request //// Chamada da const customer da função verifyIfExistsAccountCPF.
 
-  customer.name = name
+  customer.name = name  //Vai substituir o name da array customer.name, para name que pegamos no request.body
 
-  return response.status(201).send()
-
-})
-
-app.get("/account", verifyIfExistsAccountCPF, (request, response) => {
-  const {customer} = request
-  return response.json(customer)
-})
-
-app.delete("/account", verifyIfExistsAccountCPF, (request, response) => {
-  const {customer} = request
-  customers.splice(customer, 1)
-
-  return response.status(201).json(customers)
+  return response.status(201).send() //retornar status de tudo ok
 
 })
 
-app.get("/balance", verifyIfExistsAccountCPF, (request, response) => {
+app.get("/account", verifyIfExistsAccountCPF, (request, response) => { //Mostrar na tela o resultado do customer modificado.
+  const {customer} = request //// Chamada da const customer da função verifyIfExistsAccountCPF.
+  return response.json(customer) //Retornar o customer pelo JSON
+})
 
-  const { customer} = request
+app.delete("/account", verifyIfExistsAccountCPF, (request, response) => { //Deletar determinado cliente pelo CPF
+  const {customer} = request //// Chamada da const customer da função verifyIfExistsAccountCPF.
+  customers.splice(customer, 1) // Vai pegar o customer qual foi chamado pelo Middle (header.request) e vai adicionar função splice, para deletar um elemento.
 
-  const balance = getBalance(customer.statement)
+  return response.status(201).json(customers) //Retornar status de ok, mais o JSON dos customer que ele possui
 
-  return response.json(balance)
+})
+
+app.get("/balance", verifyIfExistsAccountCPF, (request, response) => { //Balanço da conta, onde vai mostrar o valor em caixa
+
+  const { customer} = request ///// Chamada da const customer da função verifyIfExistsAccountCPF.
+
+  const balance = getBalance(customer.statement) //passar a nossa array customer.statement, para dentro da função para efeutar o balanço do saldo.
+
+  return response.json(balance) //Retorna o nosso saldo par insomnia
 
 })
 
