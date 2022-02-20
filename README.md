@@ -43,5 +43,5 @@ Projeto feito em Node.js com auxílio  do Insomnia. <br>
  ---
 
 <strong>Código está inteiro comentado com detalhes sobre o que cada parte faz.</strong><br>
-<strong>Aqui está o link de um "Documento" detalhado feito no Notion, explicando cada passo do processo. <a href="https://friendly-interest-411.notion.site/Primeiro-Projeto-com-Node-js-FinApi-aab429f06bce42c08934326bc2038bba" target="_blank">link</a></strong>
+
  
