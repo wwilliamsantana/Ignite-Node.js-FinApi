@@ -1,4 +1,4 @@
-#### FinApi - Projeto financeiro
+#### Api - Projeto financeiro
 <div align="center">
   <br>
   <img alt="Logo" width="350px" src="https://raw.githubusercontent.com/Rocketseat/awesome/master/assets/logo_rocketseat.png" />
